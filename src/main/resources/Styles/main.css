@@ -1,0 +1,4 @@
+.root {
+    -fx-background-image: url("/images/montanas-minimalista-degradado-azul_3840x2160_xtrafondos.com.jpg");
+    -fx-background-size: cover; /* Esto asegura que la imagen cubra todo el fondo */
+}

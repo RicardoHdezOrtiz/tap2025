@@ -1,0 +1,18 @@
+.button{
+    -fx-background-color: #f57300;
+    -fx-text-fill: white;/*Poner el texto de color blanco*/
+    -fx-border-color: black;/*poner los bordes de color negro*/
+    -fx-border-radius: 20;/*Poner los bordes redondeados en la interfaz*/
+    -fx-background-radius: 20;/*Poner los bordes redondeados en los botones*/
+    /*-fx-padding: 5, 10, 15, 2; /*Significa que ya tiene direccion arriba, izquierda, derecha, abajo (se hace un zoom)*/
+}
+
+button.hover{
+    -fx-background-color: #0062f5; /*cuando el cursor pasa por los botones se pone de color azul*/
+}
+
+#fontbutton{
+    -fx-font: bold italic 20pt "Arial"; /*Le cambia el tamaño y la fuenta del texto*/
+    -fx-background-color: #f57300;
+    -fx-text-fill: FF0000;
+}

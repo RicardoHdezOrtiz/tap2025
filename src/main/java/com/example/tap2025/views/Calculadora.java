@@ -1,4 +1,4 @@
-package views;
+package com.example.tap2025.views;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,7 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javax.swing.plaf.InsetsUIResource;
+//import javax.swing.plaf.InsetsUIResource;
 
 public class Calculadora extends Stage {
 
@@ -22,31 +22,35 @@ public class Calculadora extends Stage {
     private GridPane gdpTeclado;
 
     private Button[][] arBtnTeclado;
-    String strTeclas[] = {"7", "8", "9", "+", "4", "5", "6", "/", "1", "2", "3", "+", ".", "=", "0"};
-
+    String strTeclas[] = {"7", "8", "9", "+", "4", "5", "6", "/", "1", "2", "3", "-", ".", "=", "0", "C"};
 
 
     public void CrearUI(){
-    CrearKeyboard();
-    txtDisplay = new TextField("0");
-    //txtDisplay.setPromptText("Teclea tu operacion"); Pone un foco como me atencion pone el recuadro en azul
-    txtDisplay.setEditable(false);
-    txtDisplay.setAlignment(Pos.BASELINE_RIGHT);//Se alinea a la derecha
-    vBox = new VBox(txtDisplay, gdpTeclado);
-    vBox.setSpacing(10);
-    vBox.setPadding(new Insets(10));
-    escena = new Scene(vBox,200, 200);
+        CrearKeyboard();
+        txtDisplay = new TextField("0");
+        //txtDisplay.setPromptText("Teclea tu operacion"); Pone un foco como me atencion pone el recuadro en azul
+        txtDisplay.setEditable(false);
+        txtDisplay.setAlignment(Pos.BASELINE_RIGHT);//Se alinea a la derecha
+        vBox = new VBox(txtDisplay, gdpTeclado);
+        vBox.setSpacing(10);
+        vBox.setPadding(new Insets(10));
+        escena = new Scene(vBox,200, 200);
+        escena.getStylesheets().add(getClass().getResource("/styles/calcu.css").toString());
     }
 
     public void CrearKeyboard(){
         arBtnTeclado = new Button[4][4];
         gdpTeclado = new GridPane();
         gdpTeclado.setHgap(5);
-        gdpTeclado.setHgap(5);
         int pos = 0;
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
                 arBtnTeclado[i][j] = new Button(strTeclas[pos]);
+                if (strTeclas[pos].equals("*")){// Añade el formato creado en calcu.css
+                    arBtnTeclado[i][j].setId("fontButton");
+                    //arBtnTeclado[i][j].setStyle("-fx-background-color: rgba("31,80,60,80"));
+                    pos++;
+                }
                 int finalPos = pos;
                 arBtnTeclado[i][j].setOnAction(e -> EventoTeclado(strTeclas[finalPos]));
                 arBtnTeclado[i][j].setPrefSize(50, 50);
@@ -69,3 +73,4 @@ public class Calculadora extends Stage {
         this.show();
     }
 }
+
