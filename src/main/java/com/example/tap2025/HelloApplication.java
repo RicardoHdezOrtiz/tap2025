@@ -21,7 +21,7 @@ public class HelloApplication extends Application {
     //private Button btnSaludo, btnSaludo2, btnSaludo3;
     private VBox vBox;
     private MenuBar mnbPrincipal;
-    private Menu menCompetencia1, menCompetencia2;   //competencia 2 debe de salir en gris
+    private Menu menCompetencia1, menCompetencia2;
     private MenuItem mitCalculadora, miRestaurante;
     private Scene escena;
 
@@ -40,7 +40,7 @@ public class HelloApplication extends Application {
         mnbPrincipal.getMenus().addAll(menCompetencia1);  // Agrega ambos menús a la barra
         vBox = new VBox(mnbPrincipal);
         escena = new Scene(vBox);
-        escena.getStylesheets().add(getClass().getResource("/styles/main.css").toString());
+        escena.getStylesheets().add(getClass().getResource("/styles/main.css").toExternalForm());
 
     }
 
