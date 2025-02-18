@@ -9,10 +9,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 public class Calculadora extends Stage {
 
     private Scene escena;
@@ -20,8 +16,7 @@ public class Calculadora extends Stage {
     private VBox vBox;
     private GridPane gdpTeclado;
     private Button[][] arBtnTeclado;
-    // Definición de teclas: "C" para limpiar y "=" para evaluar
-    private String strTeclas[] = {"7", "8", "9", "+", "4", "5", "6", "/", "1", "2", "3", "-", ".", "=", "0", "C"};
+    private String strTeclas[] = {"C", "", "", "", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", ".", "0", "=", "+"};
 
     public Calculadora() {
         CrearUI();
@@ -36,26 +31,37 @@ public class Calculadora extends Stage {
         txtDisplay.setEditable(false);
         txtDisplay.setAlignment(Pos.BASELINE_RIGHT);
         vBox = new VBox(txtDisplay, gdpTeclado);
-        vBox.getStyleClass().add("root");
+        vBox.getStyleClass().add("root"); // Asegúrate de que la clase "root" esté definida en tu CSS
         vBox.setSpacing(10);
         vBox.setPadding(new Insets(10));
+
         escena = new Scene(vBox, 200, 200);
-        escena.getStylesheets().add(getClass().getResource("/styles/main.css").toExternalForm());
+
+        // Aquí se agrega el CSS
         escena.getStylesheets().add(getClass().getResource("/styles/calcu.css").toExternalForm());
     }
 
     public void CrearKeyboard() {
-        arBtnTeclado = new Button[4][4];
+        arBtnTeclado = new Button[5][4];
         gdpTeclado = new GridPane();
-        gdpTeclado.setHgap(5);
+        gdpTeclado.setHgap(4);
+        gdpTeclado.setVgap(4);
         int pos = 0;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 4; j++) {
-                arBtnTeclado[i][j] = new Button(strTeclas[pos]);
-                final int finalPos = pos;
-                arBtnTeclado[i][j].setOnAction(e -> EventoTeclado(strTeclas[finalPos]));
-                arBtnTeclado[i][j].setPrefSize(50, 50);
-                gdpTeclado.add(arBtnTeclado[i][j], j, i);
+                String valorTecla = strTeclas[pos];
+                Button btn = new Button(valorTecla);
+
+                // Si el botón no tiene texto, se deshabilita
+                if(valorTecla.isEmpty()){
+                    btn.setDisable(true);
+                } else {
+                    final int finalPos = pos;
+                    btn.setOnAction(e -> EventoTeclado(strTeclas[finalPos]));
+                }
+
+                btn.setPrefSize(50, 50);
+                gdpTeclado.add(btn, j, i);
                 pos++;
             }
         }
@@ -74,7 +80,6 @@ public class Calculadora extends Stage {
 
     private void appendDigit(String digito) {
         String actual = txtDisplay.getText();
-        // Si el display solo tiene un "0", lo reemplazamos
         if (actual.equals("0") && !digito.equals(".")) {
             txtDisplay.setText(digito);
         } else {
@@ -86,41 +91,50 @@ public class Calculadora extends Stage {
         txtDisplay.setText("0");
     }
 
-    // Evalúa la expresión validando primero la entrada
     private String evaluateExpression(String expresion) {
-        // Eliminar espacios en blanco
-        expresion = expresion.replaceAll("\\s+", "");
-
-        // Validación básica de la expresión
-        if (expresion.isEmpty() || !expresion.matches("[0-9+\\-*/.]+") ||
-                expresion.matches(".*[+\\-*/]{2,}.*") ||
-                expresion.matches(".*[+\\-*/]$.*")) { // No permitir operadores al final
-            return "Error";
-        }
-
-        // Evitar división por 0
-        if (expresion.contains("/0") || expresion.contains("0/")) {
-            return "Error";
-        }
-
         try {
-            double resultado = simpleEvaluator(expresion);
+            if (expresion.contains("/0")) {
+                return "Error";
+            }
+            double resultado = calcularExpresion(expresion);
             return String.valueOf(resultado);
         } catch (Exception e) {
             return "Error";
         }
     }
 
-    // Método auxiliar para evaluar la expresión
-    private double simpleEvaluator(String expresion) {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("JavaScript");
-        try {
-            Object result = engine.eval(expresion);
-            return Double.parseDouble(result.toString());
-        } catch (ScriptException e) {
-            System.err.println("Error al evaluar la expresión: " + e.getMessage());
-            return 0.0;
+    private double calcularExpresion(String expresion) {
+        expresion = expresion.replaceAll("\\s+", "");
+
+        if (!expresion.matches("[0-9+\\-*/.]+")) {
+            throw new IllegalArgumentException("Expresión no válida");
         }
+
+        String[] tokens = expresion.split("(?<=[-+*/])|(?=[-+*/])");
+        double resultado = Double.parseDouble(tokens[0]);
+
+        for (int i = 1; i < tokens.length; i += 2) {
+            String operador = tokens[i];
+            double numero = Double.parseDouble(tokens[i + 1]);
+
+            switch (operador) {
+                case "+":
+                    resultado += numero;
+                    break;
+                case "-":
+                    resultado -= numero;
+                    break;
+                case "*":
+                    resultado *= numero;
+                    break;
+                case "/":
+                    if (numero == 0) {
+                        throw new ArithmeticException("División por cero");
+                    }
+                    resultado /= numero;
+                    break;
+            }
+        }
+        return resultado;
     }
 }
