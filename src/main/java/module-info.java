@@ -6,4 +6,6 @@ module com.example.tap2025 {
 
     opens com.example.tap2025 to javafx.fxml;
     exports com.example.tap2025;
+    requires mysql.connector.j;
+    requires java.sql;
 }

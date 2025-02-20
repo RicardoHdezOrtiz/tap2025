@@ -21,6 +21,11 @@
             <version>20.0.2</version> <!-- Actualizado a la misma versión de javafx-fxml -->
         </dependency>
         <dependency>
+           <groupId>mysqsl</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>20.0.2</version> <!-- Actualizado a la misma versión de javafx-controls -->
