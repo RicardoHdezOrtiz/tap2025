@@ -1,5 +1,7 @@
 package com.example.tap2025;
 
+import com.example.tap2025.modelos.Conexion;
+import com.example.tap2025.views.Rompecabezas;
 import com.example.tap2025.views.VentasRestaurantes;
 import com.example.tap2025.views.Calculadora;
 import javafx.fxml.FXMLLoader;
@@ -22,20 +24,25 @@ public class HelloApplication extends Application {
     private VBox vBox;
     private MenuBar mnbPrincipal;
     private Menu menCompetencia1, menCompetencia2;
-    private MenuItem mitCalculadora, miRestaurante;
+    private MenuItem mitCalculadora, mitRestaurante, mitRompecabezas;
     private Scene escena;
 
     void CrearUI() {
         mitCalculadora = new MenuItem("Calculadora");
-
         mitCalculadora.setOnAction(e -> {
             Calculadora calculadora = new Calculadora();  // Crear una nueva instancia de la calculadora
             calculadora.show();  // Mostrar la ventana de la calculadora
         });
-        miRestaurante = new MenuItem("Restaurante");
-        miRestaurante.setOnAction(event -> new VentasRestaurantes());
+
+        mitRestaurante = new MenuItem("Restaurante");
+        mitRestaurante.setOnAction(event -> new VentasRestaurantes());
+
+        mitRompecabezas = new MenuItem("Rompecabezas");
+        mitRompecabezas.setOnAction(event -> new Rompecabezas());
+
         menCompetencia1 = new Menu("Competencia1");
-        menCompetencia1.getItems().addAll(mitCalculadora);
+        menCompetencia1.getItems().addAll(mitCalculadora, mitRestaurante, mitRompecabezas);
+
         mnbPrincipal = new MenuBar();
         mnbPrincipal.getMenus().addAll(menCompetencia1);  // Agrega ambos menús a la barra
         vBox = new VBox(mnbPrincipal);
@@ -46,6 +53,7 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        Conexion.createConnection();
         CrearUI();
         stage.setTitle("Hola Mundo de Eventos :) ");
         stage.setScene(escena);

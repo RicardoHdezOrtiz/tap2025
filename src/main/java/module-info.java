@@ -8,4 +8,6 @@ module com.example.tap2025 {
     exports com.example.tap2025;
     requires mysql.connector.j;
     requires java.sql;
+    requires java.desktop;
+    opens com.example.tap2025.modelos;
 }
