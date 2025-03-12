@@ -19,7 +19,7 @@ public class ButtonCell extends TableCell<ClientesDAO,String> {
         btnCelda.setOnAction(event -> {
             ClientesDAO objC = this.getTableView().getItems().get(this.getIndex());
             if( strLabelBtn.equals("Editar")){
-
+                new Cliente(this.getTableView(),objC);
             }else{
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Mensaje del Sistema :)");
