@@ -1,9 +1,8 @@
 package com.example.tap2025;
 
+import com.example.tap2025.Components.Hilo;
 import com.example.tap2025.modelos.Conexion;
-import com.example.tap2025.views.Rompecabezas;
-import com.example.tap2025.views.VentasRestaurantes;
-import com.example.tap2025.views.Calculadora;
+import com.example.tap2025.views.*;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -24,7 +23,7 @@ public class HelloApplication extends Application {
     private VBox vBox;
     private MenuBar mnbPrincipal;
     private Menu menCompetencia1, menCompetencia2;
-    private MenuItem mitCalculadora, mitRestaurante, mitRompecabezas;
+    private MenuItem mitCalculadora, mitRestaurante, mitRompecabezas, mitHilos;
     private Scene escena;
 
     void CrearUI() {
@@ -35,16 +34,24 @@ public class HelloApplication extends Application {
         });
 
         mitRestaurante = new MenuItem("Restaurante");
-        mitRestaurante.setOnAction(event -> new VentasRestaurantes());
+        mitRestaurante.setOnAction(event -> new ListaClientes());
 
         mitRompecabezas = new MenuItem("Rompecabezas");
         mitRompecabezas.setOnAction(event -> new Rompecabezas());
 
+
         menCompetencia1 = new Menu("Competencia1");
         menCompetencia1.getItems().addAll(mitCalculadora, mitRestaurante, mitRompecabezas);
 
+        menCompetencia2 = new Menu("Competencia2");
+
+        mitHilos = new MenuItem("Celayork");
+        menCompetencia2.getItems().addAll(mitHilos);
+        mitHilos.setOnAction(event -> new Celayork());
+
+
         mnbPrincipal = new MenuBar();
-        mnbPrincipal.getMenus().addAll(menCompetencia1);  // Agrega ambos menús a la barra
+        mnbPrincipal.getMenus().addAll(menCompetencia1, menCompetencia2);  // Agrega ambos menús a la barra
         vBox = new VBox(mnbPrincipal);
         escena = new Scene(vBox);
         escena.getStylesheets().add(getClass().getResource("/styles/main.css").toExternalForm());
@@ -53,15 +60,24 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
+        /*new Hilo("Ruta Pinos").start();
+        new Hilo("Ruta Laureles").start();
+        new Hilo("Ruta San Juan de la Vega").start();
+        new Hilo("Ruta Monte Blanco").start();
+        new Hilo("Ruta Teneria").start();*/
+
         Conexion.createConnection();
         CrearUI();
-        stage.setTitle("Hola Mundo de Eventos :) ");
+        stage.setTitle("Hola Mundo de Eventos :)");
         stage.setScene(escena);
         stage.show();
         stage.setMaximized(true);
     }
 
-    public static void main(String[] args) {launch();}
+    public static void main(String[] args) {
+        launch();
+    }
 
         void clickEvent(){
             System.out.println("Evento desde un metodo :)");

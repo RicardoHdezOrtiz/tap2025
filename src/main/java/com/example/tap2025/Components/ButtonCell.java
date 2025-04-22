@@ -1,6 +1,7 @@
 package com.example.tap2025.Components;
 
 import com.example.tap2025.modelos.ClientesDAO;
+import com.example.tap2025.views.Cliente;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;

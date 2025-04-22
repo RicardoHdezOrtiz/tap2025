@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
@@ -14,34 +15,27 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Paths;
+import java.io.*;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Rompecabezas extends Stage {
-    private GridPane gridRompecabezas;  // Contenedor para las piezas del rompecabezas
-    private Button[][] piezas;  // Arreglo bidimensional que contiene las piezas como botones
-    private int size = 3;  // Tamaño inicial del rompecabezas (3x3)
-    private Label temporizadorLabel;  // Etiqueta para mostrar el tiempo transcurrido
-    private int tiempoTranscurrido;  // Variable para almacenar el tiempo transcurrido
-    private Timeline temporizador;  // Línea de tiempo para actualizar el temporizador
+    private GridPane gridRompecabezas;
+    private Button[][] piezas;
+    private int size = 3;
+    private Label temporizadorLabel;
+    private int tiempoTranscurrido;
+    private Timeline temporizador;
+    private boolean victoriaMostrada = false;
 
-    // Constructor que inicializa la interfaz de usuario
     public Rompecabezas() {
-        // Botones para diferentes tamaños de rompecabezas y acciones
         Button btn3x3 = new Button("3x3");
         Button btn4x4 = new Button("4x4");
         Button btn5x5 = new Button("5x5");
@@ -49,52 +43,45 @@ public class Rompecabezas extends Stage {
         Button btnVerTiempos = new Button("Ver Tiempos");
         Button btnTerminado = new Button("Terminado");
 
-        // Configuración de los eventos de los botones
-        btn3x3.setOnAction(e -> crearRompecabezas(3));  // Cambiar a rompecabezas 3x3
-        btn4x4.setOnAction(e -> crearRompecabezas(4));  // Cambiar a rompecabezas 4x4
-        btn5x5.setOnAction(e -> crearRompecabezas(5));  // Cambiar a rompecabezas 5x5
-        btnReiniciar.setOnAction(e -> reiniciarRompecabezas());  // Reiniciar el rompecabezas
-        btnVerTiempos.setOnAction(e -> mostrarVentanaTiempos());  // Ver los tiempos registrados
-        btnTerminado.setOnAction(e -> finalizarRompecabezas());  // Finalizar el juego
+        btn3x3.setOnAction(e -> crearRompecabezas(3));
+        btn4x4.setOnAction(e -> crearRompecabezas(4));
+        btn5x5.setOnAction(e -> crearRompecabezas(5));
+        btnReiniciar.setOnAction(e -> reiniciarRompecabezas());
+        btnVerTiempos.setOnAction(e -> mostrarVentanaTiempos());
+        btnTerminado.setOnAction(e -> finalizarRompecabezas());
 
-        // Alineación y espaciado de los botones en un contenedor horizontal
         HBox hBox = new HBox(20, btn3x3, btn4x4, btn5x5, btnReiniciar, btnVerTiempos, btnTerminado);
         hBox.setAlignment(Pos.CENTER);
         hBox.setPadding(new Insets(10));
 
-        // Crear el GridPane para organizar las piezas del rompecabezas
         gridRompecabezas = new GridPane();
         gridRompecabezas.setPadding(new Insets(10));
         gridRompecabezas.setHgap(5);
         gridRompecabezas.setVgap(5);
-        gridRompecabezas.setAlignment(Pos.CENTER);  // Centrar las piezas dentro del Grid
+        gridRompecabezas.setAlignment(Pos.CENTER);
 
-        // Etiqueta que muestra el tiempo transcurrido
         temporizadorLabel = new Label("Tiempo: 0 segundos");
 
-        // Crear la escena y configurar la ventana
         VBox root = new VBox(20, hBox, temporizadorLabel, gridRompecabezas);
-        root.setAlignment(Pos.CENTER);  // Centrar todo el contenido
-        Scene scene = new Scene(root, 800, 800);  // Establecer el tamaño de la ventana
+        root.setAlignment(Pos.CENTER);
+        Scene scene = new Scene(root, 800, 800);
 
-        this.setTitle("Rompecabezas");  // Título de la ventana
-        this.setScene(scene);  // Asignar la escena
-        this.show();  // Mostrar la ventana
+        this.setTitle("Rompecabezas");
+        this.setScene(scene);
+        this.show();
 
-        crearRompecabezas(size);  // Crear el rompecabezas inicial
-        iniciarTemporizador();  // Iniciar el temporizador
+        crearRompecabezas(size);
+        iniciarTemporizador();
     }
 
-    // crear el rompecabezas con un tamaño específico
     private void crearRompecabezas(int newSize) {
-        size = newSize;  // Actualizar el tamaño del rompecabezas
-        gridRompecabezas.getChildren().clear();  // Limpiar las piezas actuales
-        piezas = new Button[size][size];  // Crear el arreglo para las piezas
+        size = newSize;
+        gridRompecabezas.getChildren().clear();
+        piezas = new Button[size][size];
 
-        List<String> imagenes = new ArrayList<>();
+        List<String> nombresArchivos = new ArrayList<>();
         int inicio, fin;
 
-        // Determinar el rango de imágenes según el tamaño
         if (size == 3) {
             inicio = 1;
             fin = 9;
@@ -105,34 +92,42 @@ public class Rompecabezas extends Stage {
             inicio = 26;
             fin = 50;
         } else {
-            throw new IllegalArgumentException("Tamaño no soportado");  // Validación de tamaño
+            throw new IllegalArgumentException("Tamaño no soportado");
         }
 
-        // Llenar la lista de imágenes
         for (int i = inicio; i <= fin; i++) {
-            imagenes.add("images/Rompecabezas-image/" + i + ".png");
+            nombresArchivos.add(i + ".png");
         }
 
-        Collections.shuffle(imagenes);  // Mezclar las imágenes aleatoriamente
+        Collections.shuffle(nombresArchivos);
 
-        // Crear las piezas y añadirlas al GridPane
         for (int fila = 0; fila < size; fila++) {
             for (int columna = 0; columna < size; columna++) {
                 final int f = fila;
                 final int c = columna;
                 Button pieza = new Button();
-                pieza.setPrefSize(120, 120);  // Establecer el tamaño de cada pieza
+                pieza.setPrefSize(120, 120);
 
-                String imgPath = imagenes.remove(0);  // Obtener la siguiente imagen
-                ImageView imgView = new ImageView(new Image(getClass().getResourceAsStream("/" + imgPath)));
-                if (imgView.getImage() == null) {
-                    System.out.println("Error al cargar la imagen: " + imgPath);  // Manejo de errores al cargar imagen
+                String nombreArchivo = nombresArchivos.remove(0);
+                String imgPath = "images/Rompecabezas/" + nombreArchivo;
+                ImageView imgView = new ImageView();
+                try {
+                    Image image = new Image(getClass().getResourceAsStream("/" + imgPath));
+                    if (image.isError()) {
+                        throw new IOException("Error al cargar la imagen: " + imgPath + " - " + image.getException());
+                    }
+                    imgView.setImage(image);
+                } catch (IOException e) {
+                    System.out.println("Error al cargar la imagen: " + imgPath);
                 }
-                imgView.setFitWidth(110);  // Ajustar el tamaño de la imagen
-                imgView.setFitHeight(110);
-                pieza.setGraphic(imgView);  // Establecer la imagen de la pieza
 
-                // Configuración para el arrastre de las piezas
+                imgView.setFitWidth(110);
+                imgView.setFitHeight(110);
+                pieza.setGraphic(imgView);
+
+                // Asignar el nombre del archivo como userData
+                pieza.setUserData(nombreArchivo);
+
                 pieza.setOnDragDetected(event -> {
                     Dragboard db = pieza.startDragAndDrop(TransferMode.MOVE);
                     ClipboardContent content = new ClipboardContent();
@@ -143,7 +138,7 @@ public class Rompecabezas extends Stage {
 
                 pieza.setOnDragOver(event -> {
                     if (event.getGestureSource() != pieza && event.getDragboard().hasString()) {
-                        event.acceptTransferModes(TransferMode.MOVE);  // Aceptar el movimiento de la pieza
+                        event.acceptTransferModes(TransferMode.MOVE);
                     }
                     event.consume();
                 });
@@ -155,149 +150,148 @@ public class Rompecabezas extends Stage {
                         int filaOrigen = Integer.parseInt(indices[0]);
                         int columnaOrigen = Integer.parseInt(indices[1]);
 
-                        // Intercambiar las piezas
                         intercambiarPiezas(filaOrigen, columnaOrigen, f, c);
-                        event.setDropCompleted(true);  // Confirmar la acción de arrastre
+                        event.setDropCompleted(true);
+
+                        if (rompecabezasResuelto()) {
+                            // No mostrar el mensaje de victoria aquí, solo revisar
+                        }
                     } else {
                         event.setDropCompleted(false);
                     }
                     event.consume();
                 });
 
-                piezas[fila][columna] = pieza;  // Guardar la pieza en el arreglo
-                gridRompecabezas.add(pieza, columna, fila);  // Añadir la pieza al GridPane
+                piezas[fila][columna] = pieza;
+                gridRompecabezas.add(pieza, columna, fila);
             }
         }
-        tiempoTranscurrido = 0;  // Reiniciar el temporizador
-        actualizarTemporizador();  // Actualizar la visualización del tiempo
+        tiempoTranscurrido = 0;
+        actualizarTemporizador();
+        victoriaMostrada = false; // Resetear estado de victoria
     }
 
-    // intercambiar dos piezas del rompecabezas
+    private boolean rompecabezasResuelto() {
+        int contadorInicio = (size == 3) ? 1 : (size == 4) ? 10 : 26;
+        boolean resuelto = true;
+        int contador = contadorInicio;
+
+        for (int fila = 0; fila < size; fila++) {
+            for (int columna = 0; columna < size; columna++) {
+                Button pieza = piezas[fila][columna];
+                String nombreArchivoActual = (String) pieza.getUserData();
+                String nombreArchivoEsperado = contador + ".png";
+
+                if (!nombreArchivoActual.equals(nombreArchivoEsperado)) {
+                    resuelto = false;
+                    break;
+                }
+                contador++;
+            }
+            if (!resuelto) {
+                break;
+            }
+        }
+
+        if (resuelto && !victoriaMostrada) {
+            victoriaMostrada = true;
+            mostrarMensajeVictoria();
+            if (temporizador != null) {
+                temporizador.stop();
+            }
+            guardarTiempoEnArchivo();
+            return true;
+        }
+        return false;
+    }
+
+    private void mostrarMensajeVictoria() {
+        System.out.println("¡Victoria!");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("¡Felicidades!");
+        alert.setHeaderText(null);
+        alert.setContentText("Has resuelto el rompecabezas en " + tiempoTranscurrido + " segundos.");
+        alert.showAndWait();
+    }
+
     private void intercambiarPiezas(int filaOrigen, int columnaOrigen, int filaDestino, int columnaDestino) {
-        // Obtener los botones de las piezas a intercambiar
         Button botonOrigen = piezas[filaOrigen][columnaOrigen];
         Button botonDestino = piezas[filaDestino][columnaDestino];
 
-        // Obtener las imágenes de las piezas
         ImageView imgViewOrigen = (ImageView) botonOrigen.getGraphic();
         ImageView imgViewDestino = (ImageView) botonDestino.getGraphic();
 
-        // Verificar que ambas piezas tengan imágenes válidas antes de intercambiarlas
-        if (imgViewOrigen != null && imgViewDestino != null) {
-            botonOrigen.setGraphic(imgViewDestino);
-            botonDestino.setGraphic(imgViewOrigen);
-        }
+        Object userDataOrigen = botonOrigen.getUserData();
+        Object userDataDestino = botonDestino.getUserData();
 
-        // Verificar si el rompecabezas ha sido resuelto
-        if (isPuzzleSolved()) {
-            mostrarMensajeVictoria();  // Mostrar mensaje de victoria
-            temporizador.stop();  // Detener el temporizador
-        }
+        botonOrigen.setGraphic(imgViewDestino);
+        botonOrigen.setUserData(userDataDestino);
+
+        botonDestino.setGraphic(imgViewOrigen);
+        botonDestino.setUserData(userDataOrigen);
     }
 
-    // verificar si el rompecabezas está resuelto
-    private boolean isPuzzleSolved() {
-        int contador = 1;  // Contador para comparar las piezas en el orden correcto
-        for (int fila = 0; fila < size; fila++) {
-            for (int columna = 0; columna < size; columna++) {
-                ImageView imgView = (ImageView) piezas[fila][columna].getGraphic();
-                if (imgView != null && imgView.getImage() != null) {
-                    String imgPath = imgView.getImage().getUrl();
-                    if (imgPath != null) {
-                        String nombreArchivo = imgPath.substring(imgPath.lastIndexOf('/') + 1);
-                        int numeroImagen = Integer.parseInt(nombreArchivo.replace(".png", ""));
-                        if (numeroImagen != contador) {
-                            return false;  // Si las piezas no están en el orden correcto
-                        }
-                        contador++;
-                    } else {
-                        return false;  // Si la pieza no tiene imagen válida
-                    }
-                } else {
-                    return false;  // Si la pieza no tiene imagen
-                }
-            }
-        }
-        return true;  // El rompecabezas está resuelto
-    }
-
-    // iniciar el temporizador
     private void iniciarTemporizador() {
         temporizador = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             tiempoTranscurrido++;
-            actualizarTemporizador();  // Actualizar el tiempo mostrado
+            actualizarTemporizador();
         }));
-        temporizador.setCycleCount(Timeline.INDEFINITE);  // Repetir indefinidamente
-        temporizador.play();  // Iniciar el temporizador
+        temporizador.setCycleCount(Timeline.INDEFINITE);
+        temporizador.play();
     }
 
-    // actualizar el temporizador en la interfaz
     private void actualizarTemporizador() {
         temporizadorLabel.setText("Tiempo: " + tiempoTranscurrido + " segundos");
     }
 
-    // reiniciar el rompecabezas
     private void reiniciarRompecabezas() {
-        crearRompecabezas(size);  // Crear un nuevo rompecabezas
+        crearRompecabezas(size);
         if (temporizador != null) {
-            temporizador.stop();  // Detener el temporizador
+            temporizador.stop();
         }
-        iniciarTemporizador();  // Iniciar el temporizador
+        iniciarTemporizador();
     }
 
-    // mostrar un mensaje de victoria
-    private void mostrarMensajeVictoria() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("¡Felicidades!");  // Título del mensaje
-        alert.setHeaderText(null);
-        alert.setContentText("Has resuelto el rompecabezas en " + tiempoTranscurrido + " segundos.");
-        alert.showAndWait();  // Mostrar el mensaje
-    }
-
-    // finalizar el rompecabezas
     private void finalizarRompecabezas() {
-        mostrarMensajeVictoria();  // Mostrar el mensaje de victoria
-        guardarTiempoEnArchivo();  // Guardar el tiempo en un archivo
-        mostrarVentanaTiempos();  // Mostrar los tiempos registrados
+        mostrarMensajeVictoria();
+        guardarTiempoEnArchivo();
+        mostrarVentanaTiempos();
     }
 
-    // guardar el tiempo en un archivo
     private void guardarTiempoEnArchivo() {
         String userHome = System.getProperty("user.home");
         Path descargasPath = Paths.get(userHome, "Downloads", "tiempos.txt");
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(descargasPath.toFile(), true))) {
-            writer.write("Tiempo: " + tiempoTranscurrido + " segundos\n");  // Escribir el tiempo en el archivo
+            writer.write("Tiempo: " + tiempoTranscurrido + " segundos\n");
         } catch (IOException e) {
-            e.printStackTrace();  // Manejo de errores al escribir en el archivo
+            e.printStackTrace();
         }
     }
 
-    // mostrar la ventana con los tiempos registrados
     private void mostrarVentanaTiempos() {
         Stage ventanaTiempos = new Stage();
         ventanaTiempos.setTitle("Tiempos Registrados");
 
         TextArea textArea = new TextArea();
-        textArea.setEditable(false);  // Hacer el área de texto no editable
-        textArea.setWrapText(true);  // Habilitar el ajuste de texto
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
 
-        // Leer los tiempos desde el archivo
         String userHome = System.getProperty("user.home");
         Path descargasPath = Paths.get(userHome, "Downloads", "tiempos.txt");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(descargasPath.toFile()))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                textArea.appendText(line + "\n");  // Añadir cada línea al área de texto
+                textArea.appendText(line + "\n");
             }
         } catch (IOException e) {
-            textArea.appendText("Error al leer los tiempos.\n");  // Manejo de errores al leer el archivo
+            textArea.appendText("Error al leer los tiempos.\n");
         }
 
         VBox vbox = new VBox(10, new Label("Tiempos registrados:"), textArea);
         Scene scene = new Scene(vbox, 400, 400);
         ventanaTiempos.setScene(scene);
-        ventanaTiempos.show();  // Mostrar la ventana con los tiempos
+        ventanaTiempos.show();
     }
 }

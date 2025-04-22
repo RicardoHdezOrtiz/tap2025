@@ -16,7 +16,12 @@ public class Calculadora extends Stage {
     private VBox vBox;
     private GridPane gdpTeclado;
     private Button[][] arBtnTeclado;
-    private String strTeclas[] = {"C", "", "", "", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", ".", "0", "=", "+"};
+
+    private String strTeclas[] = {"C", "", "", "",
+            "7", "8", "9", "/",
+            "4", "5", "6", "*",
+            "1", "2", "3", "-",
+            ".", "0", "=", "+"};
 
     public Calculadora() {
         CrearUI();
@@ -27,17 +32,17 @@ public class Calculadora extends Stage {
 
     public void CrearUI() {
         CrearKeyboard();
+
         txtDisplay = new TextField("0");
         txtDisplay.setEditable(false);
         txtDisplay.setAlignment(Pos.BASELINE_RIGHT);
+
         vBox = new VBox(txtDisplay, gdpTeclado);
-        vBox.getStyleClass().add("root"); // Asegúrate de que la clase "root" esté definida en tu CSS
+        vBox.getStyleClass().add("root");
         vBox.setSpacing(10);
         vBox.setPadding(new Insets(10));
 
         escena = new Scene(vBox, 200, 200);
-
-        // Aquí se agrega el CSS
         escena.getStylesheets().add(getClass().getResource("/styles/calcu.css").toExternalForm());
     }
 
@@ -47,13 +52,13 @@ public class Calculadora extends Stage {
         gdpTeclado.setHgap(4);
         gdpTeclado.setVgap(4);
         int pos = 0;
+
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 4; j++) {
                 String valorTecla = strTeclas[pos];
                 Button btn = new Button(valorTecla);
 
-                // Si el botón no tiene texto, se deshabilita
-                if(valorTecla.isEmpty()){
+                if (valorTecla.isEmpty()) {
                     btn.setDisable(true);
                 } else {
                     final int finalPos = pos;
@@ -80,11 +85,24 @@ public class Calculadora extends Stage {
 
     private void appendDigit(String digito) {
         String actual = txtDisplay.getText();
+
         if (actual.equals("0") && !digito.equals(".")) {
             txtDisplay.setText(digito);
-        } else {
-            txtDisplay.appendText(digito);
+        } else if (actual.length() < 9) {
+            if (isValidInput(actual, digito)) {
+                txtDisplay.appendText(digito);
+            }
         }
+    }
+
+    private boolean isValidInput(String actual, String nuevo) {
+        if (nuevo.matches("[+\\-*/]")) {
+            if (actual.isEmpty()) {
+                return nuevo.equals("-"); // Permitir '-' solo al inicio
+            }
+            return !actual.matches(".*[+\\-*/]$"); // No permitir operadores seguidos
+        }
+        return true; // Siempre permitir números y puntos decimales
     }
 
     private void clearDisplay() {
@@ -104,37 +122,46 @@ public class Calculadora extends Stage {
     }
 
     private double calcularExpresion(String expresion) {
-        expresion = expresion.replaceAll("\\s+", "");
+        expresion = expresion.replaceAll("\\s+", ""); // Eliminar espacios innecesarios
 
-        if (!expresion.matches("[0-9+\\-*/.]+")) {
+        if (!expresion.matches("[-]?[0-9]+(?:[+\\-*/][-]?[0-9]+)*")) {
             throw new IllegalArgumentException("Expresión no válida");
         }
 
-        String[] tokens = expresion.split("(?<=[-+*/])|(?=[-+*/])");
-        double resultado = Double.parseDouble(tokens[0]);
+        return evaluar(expresion);
+    }
 
-        for (int i = 1; i < tokens.length; i += 2) {
-            String operador = tokens[i];
-            double numero = Double.parseDouble(tokens[i + 1]);
+    private double evaluar(String expresion) {
+        try {
+            String[] tokens = expresion.split("(?<=[+\\-*/])|(?=[+\\-*/])");
 
-            switch (operador) {
-                case "+":
-                    resultado += numero;
-                    break;
-                case "-":
-                    resultado -= numero;
-                    break;
-                case "*":
-                    resultado *= numero;
-                    break;
-                case "/":
-                    if (numero == 0) {
-                        throw new ArithmeticException("División por cero");
-                    }
-                    resultado /= numero;
-                    break;
+            int index = 0;
+            double resultado = 0;
+            if (tokens[0].equals("-")) {
+                resultado = -Double.parseDouble(tokens[1]);
+                index = 2;
+            } else {
+                resultado = Double.parseDouble(tokens[0]);
+                index = 1;
             }
+
+            for (; index < tokens.length; index += 2) {
+                String operador = tokens[index];
+                double numero = Double.parseDouble(tokens[index + 1]);
+
+                switch (operador) {
+                    case "+": resultado += numero; break;
+                    case "-": resultado -= numero; break;
+                    case "*": resultado *= numero; break;
+                    case "/":
+                        if (numero == 0) throw new ArithmeticException("División por cero");
+                        resultado /= numero;
+                        break;
+                }
+            }
+            return resultado;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Expresión no válida");
         }
-        return resultado;
     }
 }
