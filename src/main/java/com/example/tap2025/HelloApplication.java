@@ -34,7 +34,8 @@ public class HelloApplication extends Application {
         });
 
         mitRestaurante = new MenuItem("Restaurante");
-        mitRestaurante.setOnAction(event -> new ListaClientes());
+        mitRestaurante.setOnAction(event -> new RestauranteMenu());
+
 
         mitRompecabezas = new MenuItem("Rompecabezas");
         mitRompecabezas.setOnAction(event -> new Rompecabezas());

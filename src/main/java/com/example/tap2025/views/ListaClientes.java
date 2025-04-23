@@ -17,7 +17,8 @@ public class ListaClientes extends Stage {
     private VBox vBox;
     private Scene escena;
     private Button btnAgregar;
-    public ListaClientes(){
+
+    public ListaClientes() {
         CrearUI();
         this.setTitle("Listado de Clientes :)");
         this.setScene(escena);
