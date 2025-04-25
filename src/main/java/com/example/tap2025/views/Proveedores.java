@@ -17,12 +17,12 @@ public class Proveedores extends Stage {
     private ProveedoresDAO objP;
     private TableView<ProveedoresDAO> tbvProveedores;
 
-    public Proveedores(TableView<ProveedoresDAO> tbvProv, ProveedoresDAO obj){
+    public Proveedores(TableView<ProveedoresDAO> tbvProv, ProveedoresDAO obj) {
         this.tbvProveedores = tbvProv;
         CrearUI();
-        if( obj == null ){
+        if (obj == null) {
             objP = new ProveedoresDAO();
-        }else{
+        } else {
             objP = obj;
             txtNombre.setText(objP.getNombre());
             txtTelContacto.setText(objP.getTelContacto());
@@ -35,7 +35,7 @@ public class Proveedores extends Stage {
         this.show();
     }
 
-    private void CrearUI(){
+    private void CrearUI() {
         txtNombre = new TextField();
         txtTelContacto = new TextField();
         txtDireccion = new TextField();
@@ -48,7 +48,7 @@ public class Proveedores extends Stage {
             objP.setDireccion(txtDireccion.getText());
             objP.setEmail(txtEmail.getText());
             objP.setNota(txtNota.getText());
-            if( objP.getIdProveedor() > 0 )
+            if (objP.getIdProveedor() > 0)
                 objP.UPDATE();
             else
                 objP.INSERT();
@@ -59,5 +59,4 @@ public class Proveedores extends Stage {
         vBox = new VBox(txtNombre, txtTelContacto, txtDireccion, txtEmail, txtNota, btnGuardar);
         escena = new Scene(vBox, 200, 180);
     }
-
 }

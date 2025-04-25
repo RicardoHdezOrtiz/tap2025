@@ -3,45 +3,45 @@ package com.example.tap2025.views;
 import com.example.tap2025.modelos.MesasDAO;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.TableView;
 
 public class Mesa extends Stage {
 
-    private TextField txtNumeroMesa, txtCapacidad;
+    private TextField txtNoMesa, txtCapacidad;
     private Button btnGuardar;
     private VBox vBox;
     private Scene escena;
     private TableView<MesasDAO> tbvMesas;
     private MesasDAO objM;
 
-    public Mesa(TableView<MesasDAO> tbv, MesasDAO obj){
+    public Mesa(TableView<MesasDAO> tbv, MesasDAO obj) {
         this.tbvMesas = tbv;
         CrearUI();
-        if(obj == null){
+        if (obj == null) {
             objM = new MesasDAO();
         } else {
             objM = obj;
-            txtNumeroMesa.setText(objM.getNumeroMesa());
-            txtCapacidad.setText(objM.getCapacidad());
+            txtNoMesa.setText(String.valueOf(objM.getNoMesa()));
+            txtCapacidad.setText(String.valueOf(objM.getCapacidad()));
         }
         this.setTitle("Registrar Mesa");
         this.setScene(escena);
         this.show();
     }
 
-    private void CrearUI(){
-        txtNumeroMesa = new TextField();
+    private void CrearUI() {
+        txtNoMesa = new TextField();
         txtCapacidad = new TextField();
         btnGuardar = new Button("Guardar");
 
         btnGuardar.setOnAction(event -> {
-            objM.setNumeroMesa(txtNumeroMesa.getText());
-            objM.setCapacidad(txtCapacidad.getText());
+            objM.setNoMesa(Integer.parseInt(txtNoMesa.getText()));
+            objM.setCapacidad(Integer.parseInt(txtCapacidad.getText()));
 
-            if (objM.getIdMesa() > 0)
+            if (tbvMesas.getItems().contains(objM))
                 objM.UPDATE();
             else
                 objM.INSERT();
@@ -51,7 +51,7 @@ public class Mesa extends Stage {
             this.close();
         });
 
-        vBox = new VBox(txtNumeroMesa, txtCapacidad, btnGuardar);
+        vBox = new VBox(txtNoMesa, txtCapacidad, btnGuardar);
         escena = new Scene(vBox, 200, 150);
     }
 }

@@ -41,10 +41,11 @@ public class ListaMesas extends Stage {
 
     private void CreateTable(){
         MesasDAO objM = new MesasDAO();
-        TableColumn<MesasDAO, String> tbcNumero = new TableColumn<>("No. Mesa");
-        tbcNumero.setCellValueFactory(new PropertyValueFactory<>("numeroMesa"));
 
-        TableColumn<MesasDAO, String> tbcCapacidad = new TableColumn<>("Capacidad");
+        TableColumn<MesasDAO, Integer> tbcNumero = new TableColumn<>("No. Mesa");
+        tbcNumero.setCellValueFactory(new PropertyValueFactory<>("noMesa"));
+
+        TableColumn<MesasDAO, Integer> tbcCapacidad = new TableColumn<>("Capacidad");
         tbcCapacidad.setCellValueFactory(new PropertyValueFactory<>("capacidad"));
 
         TableColumn<MesasDAO, String> tbcEditar = new TableColumn<>("Editar");

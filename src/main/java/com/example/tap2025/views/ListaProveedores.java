@@ -42,14 +42,21 @@ public class ListaProveedores extends Stage {
     private void CreateTable() {
         ProveedoresDAO objP = new ProveedoresDAO();
 
+        TableColumn<ProveedoresDAO, Integer> tbcID = new TableColumn<>("ID");
+        tbcID.setCellValueFactory(new PropertyValueFactory<>("idProveedor"));
+
         TableColumn<ProveedoresDAO, String> tbcNombre = new TableColumn<>("Nombre");
         tbcNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+
         TableColumn<ProveedoresDAO, String> tbcTel = new TableColumn<>("Tel. Contacto");
         tbcTel.setCellValueFactory(new PropertyValueFactory<>("telContacto"));
+
         TableColumn<ProveedoresDAO, String> tbcDireccion = new TableColumn<>("Dirección");
         tbcDireccion.setCellValueFactory(new PropertyValueFactory<>("direccion"));
+
         TableColumn<ProveedoresDAO, String> tbcEmail = new TableColumn<>("Email");
         tbcEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+
         TableColumn<ProveedoresDAO, String> tbcNota = new TableColumn<>("Nota");
         tbcNota.setCellValueFactory(new PropertyValueFactory<>("nota"));
 
@@ -69,7 +76,10 @@ public class ListaProveedores extends Stage {
             }
         });
 
-        tbvProveedores.getColumns().addAll(tbcNombre, tbcTel, tbcDireccion, tbcEmail, tbcNota, tbcEditar, tbcEliminar);
+        tbvProveedores.getColumns().addAll(
+                tbcID, tbcNombre, tbcTel, tbcDireccion, tbcEmail, tbcNota, tbcEditar, tbcEliminar
+        );
+
         tbvProveedores.setItems(objP.SELECT());
     }
 }

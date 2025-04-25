@@ -10,7 +10,7 @@ public class ProveedoresDAO {
 
     private int idProveedor;
     private String nombre;
-    private String telContacto;
+    private String tel_contacto;
     private String direccion;
     private String email;
     private String nota;
@@ -32,11 +32,11 @@ public class ProveedoresDAO {
     }
 
     public String getTelContacto() {
-        return telContacto;
+        return tel_contacto;
     }
 
-    public void setTelContacto(String telContacto) {
-        this.telContacto = telContacto;
+    public void setTelContacto(String tel_contacto) {
+        this.tel_contacto = tel_contacto;
     }
 
     public String getDireccion() {
@@ -63,57 +63,56 @@ public class ProveedoresDAO {
         this.nota = nota;
     }
 
-    public void INSERT(){
-        String query = "INSERT INTO proveedores(nombre, telContacto, direccion, email, nota) " +
-                "VALUES('" + nombre + "','" + telContacto + "','" + direccion + "','" + email + "','" + nota + "')";
-        try{
+    public void INSERT() {
+        String query = "INSERT INTO proveedores(nombre, tel_contacto, direccion, email, nota) " +
+                "VALUES('" + nombre + "','" + tel_contacto + "','" + direccion + "','" + email + "','" + nota + "')";
+        try {
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void UPDATE(){
-        String query = "UPDATE proveedores SET nombre = '" + nombre + "', telContacto = '" + telContacto + "', " +
+    public void UPDATE() {
+        String query = "UPDATE proveedores SET nombre = '" + nombre + "', tel_contacto = '" + tel_contacto + "', " +
                 "direccion = '" + direccion + "', email = '" + email + "', nota = '" + nota + "' WHERE idProveedor = " + idProveedor;
         try {
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void DELETE(){
+    public void DELETE() {
         String query = "DELETE FROM proveedores WHERE idProveedor = " + idProveedor;
-        try{
+        try {
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public ObservableList<ProveedoresDAO> SELECT(){
+    public ObservableList<ProveedoresDAO> SELECT() {
         String query = "SELECT * FROM proveedores";
         ObservableList<ProveedoresDAO> listaP = FXCollections.observableArrayList();
         ProveedoresDAO objP;
         try {
             Statement stmt = Conexion.connection.createStatement();
             ResultSet res = stmt.executeQuery(query);
-            while(res.next()){
+            while (res.next()) {
                 objP = new ProveedoresDAO();
                 objP.setIdProveedor(res.getInt("idProveedor"));
                 objP.setNombre(res.getString("nombre"));
-                objP.setTelContacto(res.getString("telContacto"));
+                objP.setTelContacto(res.getString("tel_contacto"));
                 objP.setDireccion(res.getString("direccion"));
                 objP.setEmail(res.getString("email"));
                 objP.setNota(res.getString("nota"));
                 listaP.add(objP);
             }
-        }catch(Exception e){
-            System.out.println("Error en SELECT de proveedores: " + e.getMessage());
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return listaP;

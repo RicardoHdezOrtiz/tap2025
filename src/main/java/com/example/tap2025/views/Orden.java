@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class Orden extends Stage {
 
-    private TextField txtIdCliente, txtFecha, txtTotal, txtIdMesa, txtIdEmpleado;
+    private TextField txtIdCliente, txtFecha, txtTotal, txtNoMesa, txtIdEmpleado;
     private Button btnGuardar;
     private VBox vBox;
     private Scene escena;
@@ -25,7 +25,7 @@ public class Orden extends Stage {
             txtIdCliente.setText(String.valueOf(obj.getIdCliente()));
             txtFecha.setText(obj.getFecha());
             txtTotal.setText(String.valueOf(obj.getTotal()));
-            txtIdMesa.setText(String.valueOf(obj.getIdMesa()));
+            txtNoMesa.setText(String.valueOf(obj.getNoMesa()));
             txtIdEmpleado.setText(String.valueOf(obj.getIdEmpleado()));
         }
         this.setTitle("Registro de Orden");
@@ -35,30 +35,45 @@ public class Orden extends Stage {
 
     private void CrearUI() {
         txtIdCliente = new TextField();
+        txtIdCliente.setPromptText("ID Cliente");
+
         txtFecha = new TextField();
+        txtFecha.setPromptText("Fecha (yyyy-mm-dd)");
+
         txtTotal = new TextField();
-        txtIdMesa = new TextField();
+        txtTotal.setPromptText("Total");
+
+        txtNoMesa = new TextField();
+        txtNoMesa.setPromptText("No. Mesa");
+
         txtIdEmpleado = new TextField();
+        txtIdEmpleado.setPromptText("ID Empleado");
+
         btnGuardar = new Button("Guardar");
 
         btnGuardar.setOnAction(e -> {
-            objOrden.setIdCliente(Integer.parseInt(txtIdCliente.getText()));
-            objOrden.setFecha(txtFecha.getText());
-            objOrden.setTotal(Float.parseFloat(txtTotal.getText()));
-            objOrden.setIdMesa(Integer.parseInt(txtIdMesa.getText()));
-            objOrden.setIdEmpleado(Integer.parseInt(txtIdEmpleado.getText()));
+            try {
+                objOrden.setIdCliente(Integer.parseInt(txtIdCliente.getText()));
+                objOrden.setFecha(txtFecha.getText());
+                objOrden.setTotal(Float.parseFloat(txtTotal.getText()));
+                objOrden.setNoMesa(Integer.parseInt(txtNoMesa.getText()));
+                objOrden.setIdEmpleado(Integer.parseInt(txtIdEmpleado.getText()));
 
-            if (objOrden.getIdOrden() > 0)
-                objOrden.UPDATE();
-            else
-                objOrden.INSERT();
+                if (objOrden.getIdOrden() > 0)
+                    objOrden.UPDATE();
+                else
+                    objOrden.INSERT();
 
-            tbvOrdenes.setItems(objOrden.SELECT());
-            tbvOrdenes.refresh();
-            this.close();
+                tbvOrdenes.setItems(objOrden.SELECT());
+                tbvOrdenes.refresh();
+                this.close();
+            } catch (NumberFormatException ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor ingresa datos válidos.");
+                alert.show();
+            }
         });
 
-        vBox = new VBox(txtIdCliente, txtFecha, txtTotal, txtIdMesa, txtIdEmpleado, btnGuardar);
+        vBox = new VBox(10, txtIdCliente, txtFecha, txtTotal, txtNoMesa, txtIdEmpleado, btnGuardar);
         escena = new Scene(vBox, 300, 250);
     }
 }

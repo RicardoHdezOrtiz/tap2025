@@ -8,7 +8,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class ListaBebidas extends Stage {
 
@@ -44,6 +43,9 @@ public class ListaBebidas extends Stage {
     private void CrearTabla(){
         BebidasDAO objB = new BebidasDAO();
 
+        TableColumn<BebidasDAO, Integer> colID = new TableColumn<>("ID");
+        colID.setCellValueFactory(new PropertyValueFactory<>("idBebida"));
+
         TableColumn<BebidasDAO, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombreBebida"));
 
@@ -62,7 +64,7 @@ public class ListaBebidas extends Stage {
         TableColumn<BebidasDAO, String> colEliminar = new TableColumn<>("Eliminar");
         colEliminar.setCellFactory(param -> new ButtonCell<>("Eliminar"));
 
-        tbvBebidas.getColumns().addAll(colNombre, colPrecio, colCosto, colCategoria, colEditar, colEliminar);
+        tbvBebidas.getColumns().addAll(colID, colNombre, colPrecio, colCosto, colCategoria, colEditar, colEliminar);
         tbvBebidas.setItems(objB.SELECT());
     }
 }

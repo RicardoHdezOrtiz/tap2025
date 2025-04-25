@@ -27,6 +27,7 @@ public class ListaOrden extends Stage {
     private void CrearUI() {
         tbvOrdenes = new TableView<>();
         btnAgregar = new Button();
+
         btnAgregar.setOnAction(e -> new Orden(tbvOrdenes, null));
 
         ImageView imv = new ImageView(getClass().getResource("/images/load7.png").toString());
@@ -43,6 +44,9 @@ public class ListaOrden extends Stage {
     private void CrearTabla() {
         OrdenDAO obj = new OrdenDAO();
 
+        TableColumn<OrdenDAO, Integer> colIdOrden = new TableColumn<>("ID Orden");
+        colIdOrden.setCellValueFactory(new PropertyValueFactory<>("idOrden"));
+
         TableColumn<OrdenDAO, Integer> colIdCliente = new TableColumn<>("ID Cliente");
         colIdCliente.setCellValueFactory(new PropertyValueFactory<>("idCliente"));
 
@@ -52,8 +56,8 @@ public class ListaOrden extends Stage {
         TableColumn<OrdenDAO, Float> colTotal = new TableColumn<>("Total");
         colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
 
-        TableColumn<OrdenDAO, Integer> colIdMesa = new TableColumn<>("ID Mesa");
-        colIdMesa.setCellValueFactory(new PropertyValueFactory<>("idMesa"));
+        TableColumn<OrdenDAO, Integer> colNoMesa = new TableColumn<>("No. Mesa");
+        colNoMesa.setCellValueFactory(new PropertyValueFactory<>("noMesa"));
 
         TableColumn<OrdenDAO, Integer> colIdEmpleado = new TableColumn<>("ID Empleado");
         colIdEmpleado.setCellValueFactory(new PropertyValueFactory<>("idEmpleado"));
@@ -64,7 +68,7 @@ public class ListaOrden extends Stage {
         TableColumn<OrdenDAO, String> colEliminar = new TableColumn<>("Eliminar");
         colEliminar.setCellFactory(param -> new ButtonCell<>("Eliminar"));
 
-        tbvOrdenes.getColumns().addAll(colIdCliente, colFecha, colTotal, colIdMesa, colIdEmpleado, colEditar, colEliminar);
+        tbvOrdenes.getColumns().addAll(colIdOrden, colIdCliente, colFecha, colTotal, colNoMesa, colIdEmpleado, colEditar, colEliminar);
         tbvOrdenes.setItems(obj.SELECT());
     }
 }

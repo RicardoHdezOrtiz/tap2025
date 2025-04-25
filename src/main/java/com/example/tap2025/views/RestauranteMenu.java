@@ -21,7 +21,6 @@ public class RestauranteMenu extends Stage {
         Button btnCategorias = new Button("Categorías");
         Button btnOrdenes = new Button("Órdenes");
 
-        // Acciones
         btnClientes.setOnAction(e -> new ListaClientes());
         btnEmpleados.setOnAction(e -> new ListaEmpleado());
         btnProveedores.setOnAction(e -> new ListaProveedores());
@@ -30,12 +29,10 @@ public class RestauranteMenu extends Stage {
         btnCategorias.setOnAction(e -> new ListaCategoria());
         btnOrdenes.setOnAction(e -> new ListaOrden());
 
-        // Crear VBox y alinear
         VBox vbox = new VBox(15, btnClientes, btnEmpleados, btnProveedores, btnMesas, btnBebidas, btnCategorias, btnOrdenes);
         vbox.setPadding(new Insets(30));
         vbox.setAlignment(Pos.CENTER);
 
-        // Tamaño y escena
         Scene scene = new Scene(vbox, 300, 400);
         this.setScene(scene);
         this.show();

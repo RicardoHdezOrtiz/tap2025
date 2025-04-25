@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class EmpleadoDAO {
-    private int idEmpleado;
+    private int idEmp;
     private String nombres;
     private String apellido1;
     private String apellido2;
@@ -19,12 +19,12 @@ public class EmpleadoDAO {
     private String celEmp;
     private String fechaIngreso;
 
-    public int getIdEmpleado() {
-        return idEmpleado;
+    public int getIdEmp() {
+        return idEmp;
     }
 
-    public void setIdEmpleado(int idEmpleado) {
-        this.idEmpleado = idEmpleado;
+    public void setIdEmp(int idEmp) {
+        this.idEmp = idEmp;
     }
 
     public String getNombres() {
@@ -108,7 +108,7 @@ public class EmpleadoDAO {
     }
 
     public void INSERT() {
-        String query = "INSERT INTO empleado(nombres,apellido1,apellido2,curp,rfc,sueldo,horario,nssEmp,celEmp,fechaIngreso) " +
+        String query = "INSERT INTO empleados(nombres, apellido1, apellido2, curp, rfc, sueldo, horario, nssEmp, celEmp, fechaIngreso) " +
                 "VALUES('" + nombres + "','" + apellido1 + "','" + apellido2 + "','" + curp + "','" + rfc + "'," + sueldo +
                 ",'" + horario + "','" + nssEmp + "','" + celEmp + "','" + fechaIngreso + "')";
         try {
@@ -120,10 +120,10 @@ public class EmpleadoDAO {
     }
 
     public void UPDATE() {
-        String query = "UPDATE empleado SET nombres='" + nombres + "', apellido1='" + apellido1 + "', apellido2='" + apellido2 +
+        String query = "UPDATE empleados SET nombres='" + nombres + "', apellido1='" + apellido1 + "', apellido2='" + apellido2 +
                 "', curp='" + curp + "', rfc='" + rfc + "', sueldo=" + sueldo + ", horario='" + horario +
                 "', nssEmp='" + nssEmp + "', celEmp='" + celEmp + "', fechaIngreso='" + fechaIngreso +
-                "' WHERE idEmpleado=" + idEmpleado;
+                "' WHERE idEmp=" + idEmp;
         try {
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
@@ -133,7 +133,7 @@ public class EmpleadoDAO {
     }
 
     public void DELETE() {
-        String query = "DELETE FROM empleado WHERE idEmpleado=" + idEmpleado;
+        String query = "DELETE FROM empleados WHERE idEmp=" + idEmp;
         try {
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
@@ -143,7 +143,7 @@ public class EmpleadoDAO {
     }
 
     public ObservableList<EmpleadoDAO> SELECT() {
-        String query = "SELECT * FROM empleado";
+        String query = "SELECT * FROM empleados";
         ObservableList<EmpleadoDAO> lista = FXCollections.observableArrayList();
         EmpleadoDAO obj;
         try {
@@ -151,7 +151,7 @@ public class EmpleadoDAO {
             ResultSet res = stmt.executeQuery(query);
             while (res.next()) {
                 obj = new EmpleadoDAO();
-                obj.setIdEmpleado(res.getInt("idEmpleado"));
+                obj.setIdEmp(res.getInt("idEmp"));
                 obj.setNombres(res.getString("nombres"));
                 obj.setApellido1(res.getString("apellido1"));
                 obj.setApellido2(res.getString("apellido2"));

@@ -11,60 +11,30 @@ public class OrdenDAO {
     private int idCliente;
     private String fecha;
     private float total;
-    private int idMesa;
+    private int noMesa;
     private int idEmpleado;
 
-    public int getIdOrden() {
-        return idOrden;
-    }
+    public int getIdOrden() { return idOrden; }
+    public void setIdOrden(int idOrden) { this.idOrden = idOrden; }
 
-    public void setIdOrden(int idOrden) {
-        this.idOrden = idOrden;
-    }
+    public int getIdCliente() { return idCliente; }
+    public void setIdCliente(int idCliente) { this.idCliente = idCliente; }
 
-    public int getIdCliente() {
-        return idCliente;
-    }
+    public String getFecha() { return fecha; }
+    public void setFecha(String fecha) { this.fecha = fecha; }
 
-    public void setIdCliente(int idCliente) {
-        this.idCliente = idCliente;
-    }
+    public float getTotal() { return total; }
+    public void setTotal(float total) { this.total = total; }
 
-    public String getFecha() {
-        return fecha;
-    }
+    public int getNoMesa() { return noMesa; }
+    public void setNoMesa(int noMesa) { this.noMesa = noMesa; }
 
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
-    }
-
-    public float getTotal() {
-        return total;
-    }
-
-    public void setTotal(float total) {
-        this.total = total;
-    }
-
-    public int getIdMesa() {
-        return idMesa;
-    }
-
-    public void setIdMesa(int idMesa) {
-        this.idMesa = idMesa;
-    }
-
-    public int getIdEmpleado() {
-        return idEmpleado;
-    }
-
-    public void setIdEmpleado(int idEmpleado) {
-        this.idEmpleado = idEmpleado;
-    }
+    public int getIdEmpleado() { return idEmpleado; }
+    public void setIdEmpleado(int idEmpleado) { this.idEmpleado = idEmpleado; }
 
     public void INSERT() {
-        String query = "INSERT INTO ordenes (idCliente, fecha, total, idMesa, idEmpleado) VALUES (" +
-                idCliente + ", '" + fecha + "', " + total + ", " + idMesa + ", " + idEmpleado + ")";
+        String query = "INSERT INTO Orden (idCliente, fecha, total, noMesa, idEmpleado) VALUES (" +
+                idCliente + ", '" + fecha + "', " + total + ", " + noMesa + ", " + idEmpleado + ")";
         try {
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
@@ -74,8 +44,8 @@ public class OrdenDAO {
     }
 
     public void UPDATE() {
-        String query = "UPDATE ordenes SET idCliente = " + idCliente + ", fecha = '" + fecha +
-                "', total = " + total + ", idMesa = " + idMesa + ", idEmpleado = " + idEmpleado +
+        String query = "UPDATE Orden SET idCliente = " + idCliente + ", fecha = '" + fecha +
+                "', total = " + total + ", noMesa = " + noMesa + ", idEmpleado = " + idEmpleado +
                 " WHERE idOrden = " + idOrden;
         try {
             Statement stmt = Conexion.connection.createStatement();
@@ -86,7 +56,7 @@ public class OrdenDAO {
     }
 
     public void DELETE() {
-        String query = "DELETE FROM ordenes WHERE idOrden = " + idOrden;
+        String query = "DELETE FROM Orden WHERE idOrden = " + idOrden;
         try {
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
@@ -99,14 +69,14 @@ public class OrdenDAO {
         ObservableList<OrdenDAO> lista = FXCollections.observableArrayList();
         try {
             Statement stmt = Conexion.connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM ordenes");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Orden");
             while (rs.next()) {
                 OrdenDAO o = new OrdenDAO();
                 o.setIdOrden(rs.getInt("idOrden"));
                 o.setIdCliente(rs.getInt("idCliente"));
                 o.setFecha(rs.getString("fecha"));
                 o.setTotal(rs.getFloat("total"));
-                o.setIdMesa(rs.getInt("idMesa"));
+                o.setNoMesa(rs.getInt("noMesa"));
                 o.setIdEmpleado(rs.getInt("idEmpleado"));
                 lista.add(o);
             }

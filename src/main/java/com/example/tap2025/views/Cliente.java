@@ -11,51 +11,53 @@ import javafx.stage.Stage;
 public class Cliente extends Stage {
 
     private Button btnGuardar;
-    private TextField txtNomCte, txtDireccion, txtTelCte, txtEmail;
+    private TextField txtNomCte, txtApellidoPaterno, txtApellidoMaterno, txtDireccion, txtTelCte, txtEmail;
     private VBox vBox;
     private Scene escena;
     private ClientesDAO objC;
     private TableView<ClientesDAO> tbvClientes;
 
-    public Cliente(TableView<ClientesDAO> tbvCte, ClientesDAO obj){
+    public Cliente(TableView<ClientesDAO> tbvCte, ClientesDAO obj) {
         this.tbvClientes = tbvCte;
         CrearUI();
-        if( obj == null ){
-            objC = new ClientesDAO();
-        }else{
+        if (obj == null) {
+            objC = new ClientesDAO(); // Si el objeto es null, se crea un nuevo objeto vacío
+        } else {
             objC = obj;
             txtNomCte.setText(objC.getNomCte());
+            txtApellidoPaterno.setText(objC.getApellidoPaterno());
+            txtApellidoMaterno.setText(objC.getApellidoMaterno());
             txtDireccion.setText(objC.getDireccion());
             txtEmail.setText(objC.getEmailCte());
             txtTelCte.setText(objC.getTelCte());
         }
-        //objC = obj == null ? new ClientesDAO() : obj;
         this.setTitle("Registrar Cliente");
         this.setScene(escena);
         this.show();
     }
-    private void CrearUI(){
+
+    private void CrearUI() {
         txtNomCte = new TextField();
+        txtApellidoPaterno = new TextField();
+        txtApellidoMaterno = new TextField();
         txtDireccion = new TextField();
         txtTelCte = new TextField();
         txtEmail = new TextField();
         btnGuardar = new Button("Guardar");
+
         btnGuardar.setOnAction(event -> {
             objC.setNomCte(txtNomCte.getText());
+            objC.setApellidoPaterno(txtApellidoPaterno.getText());
+            objC.setApellidoMaterno(txtApellidoMaterno.getText());
             objC.setDireccion(txtDireccion.getText());
             objC.setTelCte(txtTelCte.getText());
             objC.setEmailCte(txtEmail.getText());
-            if( objC.getIdCte() > 0 )
-                objC.UPDATE();
-            else
-                objC.INSERT();
-            tbvClientes.setItems(objC.SELECT());
-            tbvClientes.refresh();
+            objC.INSERT(); // Guarda el cliente
+            tbvClientes.setItems(new ClientesDAO().SELECT()); // Actualiza la lista de clientes
             this.close();
         });
-        vBox = new VBox(txtNomCte,txtDireccion,txtTelCte,txtEmail,btnGuardar);
-        escena = new Scene(vBox,120,150);
+
+        vBox = new VBox(txtNomCte, txtApellidoPaterno, txtApellidoMaterno, txtDireccion, txtEmail, txtTelCte, btnGuardar);
+        escena = new Scene(vBox, 400, 300);
     }
-
-
 }

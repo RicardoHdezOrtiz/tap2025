@@ -65,7 +65,7 @@ public class Empleado extends Stage {
             objEmpleado.setCelEmp(txtCelular.getText());
             objEmpleado.setFechaIngreso(txtFechaIngreso.getText());
 
-            if (objEmpleado.getIdEmpleado() > 0) {
+            if (objEmpleado.getIdEmp() > 0) {
                 objEmpleado.UPDATE();
             } else {
                 objEmpleado.INSERT();
@@ -76,7 +76,8 @@ public class Empleado extends Stage {
             this.close();
         });
 
-        vBox = new VBox(txtNombres, txtApellido1, txtApellido2, txtCURP, txtRFC, txtSueldo, txtHorario, txtNSS, txtCelular, txtFechaIngreso, btnGuardar);
+        vBox = new VBox(txtNombres, txtApellido1, txtApellido2, txtCURP, txtRFC, txtSueldo,
+                txtHorario, txtNSS, txtCelular, txtFechaIngreso, btnGuardar);
         escena = new Scene(vBox, 300, 400);
     }
 }

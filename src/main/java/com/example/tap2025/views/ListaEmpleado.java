@@ -17,6 +17,7 @@ public class ListaEmpleado extends Stage {
     private VBox vBox;
     private Scene escena;
     private Button btnAgregar;
+
     public ListaEmpleado() {
         CrearUI();
         this.setTitle("Listado de Empleados :)");
@@ -27,7 +28,7 @@ public class ListaEmpleado extends Stage {
     private void CrearUI() {
         tbvEmpleados = new TableView<>();
         btnAgregar = new Button();
-        btnAgregar.setOnAction(event -> new Empleado(tbvEmpleados, null)); // Ventana para agregar un nuevo empleado
+        btnAgregar.setOnAction(event -> new Empleado(tbvEmpleados, null));
         ImageView imv = new ImageView(getClass().getResource("/images/load2.png").toString());
         imv.setFitWidth(20);
         imv.setFitHeight(20);
@@ -40,6 +41,9 @@ public class ListaEmpleado extends Stage {
 
     private void CreateTable() {
         EmpleadoDAO objE = new EmpleadoDAO();
+
+        TableColumn<EmpleadoDAO, Integer> tbcIdEmp = new TableColumn<>("ID");
+        tbcIdEmp.setCellValueFactory(new PropertyValueFactory<>("idEmp"));
 
         TableColumn<EmpleadoDAO, String> tbcNombres = new TableColumn<>("Nombres");
         tbcNombres.setCellValueFactory(new PropertyValueFactory<>("nombres"));
@@ -87,7 +91,8 @@ public class ListaEmpleado extends Stage {
             }
         });
 
-        tbvEmpleados.getColumns().addAll(tbcNombres, tbcApellido1, tbcApellido2, tbcCURP, tbcRFC, tbcSueldo, tbcHorario, tbcNSS, tbcCelular, tbcFechaIngreso, tbcEditar, tbcEliminar);
-        tbvEmpleados.setItems(objE.SELECT()); // Asegúrate de que SELECT() devuelva una lista válida de empleados
+        tbvEmpleados.getColumns().addAll(tbcIdEmp, tbcNombres, tbcApellido1, tbcApellido2, tbcCURP,
+                tbcRFC, tbcSueldo, tbcHorario, tbcNSS, tbcCelular, tbcFechaIngreso, tbcEditar, tbcEliminar);
+        tbvEmpleados.setItems(objE.SELECT());
     }
 }
