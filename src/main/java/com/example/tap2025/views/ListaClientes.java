@@ -2,46 +2,44 @@ package com.example.tap2025.views;
 
 import com.example.tap2025.Components.ButtonCell;
 import com.example.tap2025.modelos.ClientesDAO;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-public class ListaClientes extends Stage {
+public class ListaClientes {
 
     private ToolBar tlbMenu;
     private TableView<ClientesDAO> tbvClientes;
     private VBox vBox;
-    private Scene escena;
     private Button btnAgregar;
 
     public ListaClientes() {
         CrearUI();
-        this.setTitle("Listado de Clientes");
-        this.setScene(escena);
-        this.show();
     }
 
     private void CrearUI() {
         tbvClientes = new TableView<>();
         btnAgregar = new Button();
-        btnAgregar.setOnAction(event -> new Cliente(tbvClientes, null));
 
         ImageView imv = new ImageView(getClass().getResource("/images/load.png").toString());
-        imv.setFitWidth(20);
-        imv.setFitHeight(20);
+        imv.setFitWidth(16);  // Tamaño más pequeño
+        imv.setFitHeight(16);
         btnAgregar.setGraphic(imv);
 
+        btnAgregar.setOnAction(event -> {
+            new Cliente(tbvClientes, null);  // null porque es un nuevo cliente
+        });
+
         tlbMenu = new ToolBar(btnAgregar);
-        CreateTable();
+
+        CrearTabla();
 
         vBox = new VBox(tlbMenu, tbvClientes);
-        escena = new Scene(vBox, 800, 600);
+        vBox.setSpacing(5);
     }
 
-    private void CreateTable() {
+    private void CrearTabla() {
         ClientesDAO objC = new ClientesDAO();
 
         TableColumn<ClientesDAO, Integer> tbcIdCliente = new TableColumn<>("ID");
@@ -66,12 +64,27 @@ public class ListaClientes extends Stage {
         tbcTel.setCellValueFactory(new PropertyValueFactory<>("telCte"));
 
         TableColumn<ClientesDAO, String> tbcEditar = new TableColumn<>("Editar");
-        tbcEditar.setCellFactory(param -> new ButtonCell("Editar"));
+        tbcEditar.setCellFactory(param -> new ButtonCell<>("Editar"));
 
         TableColumn<ClientesDAO, String> tbcEliminar = new TableColumn<>("Eliminar");
-        tbcEliminar.setCellFactory(param -> new ButtonCell("Eliminar"));
+        tbcEliminar.setCellFactory(param -> new ButtonCell<>("Eliminar"));
 
-        tbvClientes.getColumns().addAll(tbcIdCliente, tbcNomCte, tbcApellidoPaterno, tbcApellidoMaterno, tbcDireccion, tbcEmail, tbcTel, tbcEditar, tbcEliminar);
+        tbvClientes.getColumns().addAll(
+                tbcIdCliente,
+                tbcNomCte,
+                tbcApellidoPaterno,
+                tbcApellidoMaterno,
+                tbcDireccion,
+                tbcEmail,
+                tbcTel,
+                tbcEditar,
+                tbcEliminar
+        );
         tbvClientes.setItems(objC.SELECT());
+    }
+
+    // Para que puedas obtener la vista y agregarla a tu layout principal
+    public VBox getVista() {
+        return vBox;
     }
 }

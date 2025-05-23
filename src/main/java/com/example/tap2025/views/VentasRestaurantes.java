@@ -19,7 +19,7 @@ public class VentasRestaurantes extends Stage {
         this.show();
     }
 
-    void CrearUI() {
+    void CrearUI() { 
         pnlRestaurante = new Panel("Tacos Inge");
         pnlRestaurante.getStyleClass().add("panel-primary");
         escena = new Scene(pnlRestaurante,300,200);

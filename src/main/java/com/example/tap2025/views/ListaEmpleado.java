@@ -2,44 +2,44 @@ package com.example.tap2025.views;
 
 import com.example.tap2025.Components.ButtonCell;
 import com.example.tap2025.modelos.EmpleadoDAO;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.util.Callback;
 
-public class ListaEmpleado extends Stage {
+public class ListaEmpleado {
 
     private ToolBar tlbMenu;
     private TableView<EmpleadoDAO> tbvEmpleados;
     private VBox vBox;
-    private Scene escena;
     private Button btnAgregar;
 
     public ListaEmpleado() {
         CrearUI();
-        this.setTitle("Listado de Empleados :)");
-        this.setScene(escena);
-        this.show();
     }
 
     private void CrearUI() {
         tbvEmpleados = new TableView<>();
         btnAgregar = new Button();
-        btnAgregar.setOnAction(event -> new Empleado(tbvEmpleados, null));
+
         ImageView imv = new ImageView(getClass().getResource("/images/load2.png").toString());
-        imv.setFitWidth(20);
-        imv.setFitHeight(20);
+        imv.setFitWidth(16);
+        imv.setFitHeight(16);
         btnAgregar.setGraphic(imv);
+
+        btnAgregar.setOnAction(event -> {
+            new Empleado(tbvEmpleados, null);  // null para nuevo empleado
+        });
+
         tlbMenu = new ToolBar(btnAgregar);
-        CreateTable();
+
+        CrearTabla();
+
         vBox = new VBox(tlbMenu, tbvEmpleados);
-        escena = new Scene(vBox, 800, 600);
+        vBox.setSpacing(5);
     }
 
-    private void CreateTable() {
+    private void CrearTabla() {
         EmpleadoDAO objE = new EmpleadoDAO();
 
         TableColumn<EmpleadoDAO, Integer> tbcIdEmp = new TableColumn<>("ID");
@@ -76,23 +76,22 @@ public class ListaEmpleado extends Stage {
         tbcFechaIngreso.setCellValueFactory(new PropertyValueFactory<>("fechaIngreso"));
 
         TableColumn<EmpleadoDAO, String> tbcEditar = new TableColumn<>("Editar");
-        tbcEditar.setCellFactory(new Callback<TableColumn<EmpleadoDAO, String>, TableCell<EmpleadoDAO, String>>() {
-            @Override
-            public TableCell<EmpleadoDAO, String> call(TableColumn<EmpleadoDAO, String> param) {
-                return new ButtonCell<>("Editar");
-            }
-        });
+        tbcEditar.setCellFactory(param -> new ButtonCell<>("Editar"));
 
         TableColumn<EmpleadoDAO, String> tbcEliminar = new TableColumn<>("Eliminar");
-        tbcEliminar.setCellFactory(new Callback<TableColumn<EmpleadoDAO, String>, TableCell<EmpleadoDAO, String>>() {
-            @Override
-            public TableCell<EmpleadoDAO, String> call(TableColumn<EmpleadoDAO, String> param) {
-                return new ButtonCell<>("Eliminar");
-            }
-        });
+        tbcEliminar.setCellFactory(param -> new ButtonCell<>("Eliminar"));
 
-        tbvEmpleados.getColumns().addAll(tbcIdEmp, tbcNombres, tbcApellido1, tbcApellido2, tbcCURP,
-                tbcRFC, tbcSueldo, tbcHorario, tbcNSS, tbcCelular, tbcFechaIngreso, tbcEditar, tbcEliminar);
+        tbvEmpleados.getColumns().addAll(
+                tbcIdEmp, tbcNombres, tbcApellido1, tbcApellido2, tbcCURP,
+                tbcRFC, tbcSueldo, tbcHorario, tbcNSS, tbcCelular, tbcFechaIngreso,
+                tbcEditar, tbcEliminar
+        );
+
         tbvEmpleados.setItems(objE.SELECT());
+    }
+
+    // Devuelve el VBox para integrarlo en la ventana principal
+    public VBox getVista() {
+        return vBox;
     }
 }
