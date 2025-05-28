@@ -1,6 +1,6 @@
 package com.example.tap2025.views;
 
-import com.example.tap2025.modelos.CategoriaDAO;
+import com.example.tap2025.modelos.ProductoDAO;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
@@ -8,20 +8,20 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class Categoria extends Stage {
+public class Producto extends Stage {
 
     private TextField txtNombre, txtDescripcion;
     private Button btnGuardar;
     private VBox vBox;
     private Scene escena;
-    private TableView<CategoriaDAO> tbvCategoria;
-    private CategoriaDAO objC;
+    private TableView<ProductoDAO> tbvCategoria;
+    private ProductoDAO objC;
 
-    public Categoria(TableView<CategoriaDAO> tbv, CategoriaDAO obj) {
+    public Producto(TableView<ProductoDAO> tbv, ProductoDAO obj) {
         this.tbvCategoria = tbv;
         CrearUI();
         if (obj == null) {
-            objC = new CategoriaDAO();
+            objC = new ProductoDAO();
         } else {
             objC = obj;
             txtNombre.setText(obj.getNomCategoria());
