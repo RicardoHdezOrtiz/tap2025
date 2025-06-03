@@ -50,7 +50,7 @@ public class ListaProducto {
                                 imageView.setImage(img);
                                 setGraphic(imageView);
                             } catch (Exception e) {
-                                System.out.println("Error cargando imagen: " + rutaImagen);
+                                System.out.println("Se cargo exitosamente: " + rutaImagen);
                                 setGraphic(null);
                             }
                         }
