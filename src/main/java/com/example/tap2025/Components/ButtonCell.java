@@ -1,25 +1,13 @@
 package com.example.tap2025.Components;
 
-import com.example.tap2025.modelos.ClientesDAO;
-import com.example.tap2025.modelos.EmpleadoDAO;
-import com.example.tap2025.modelos.ProveedoresDAO;
-import com.example.tap2025.modelos.MesasDAO;
-import com.example.tap2025.modelos.BebidasDAO;
-import com.example.tap2025.modelos.CategoriaDAO;
-import com.example.tap2025.modelos.OrdenDAO;
-import com.example.tap2025.views.Cliente;
-import com.example.tap2025.views.Empleado;
-import com.example.tap2025.views.Proveedores;
-import com.example.tap2025.views.Mesa;
-import com.example.tap2025.views.Bebidas;
-import com.example.tap2025.views.Categoria;
-import com.example.tap2025.views.Orden;
+import com.example.tap2025.modelos.*;
+import com.example.tap2025.views.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 
-@SuppressWarnings("unchecked") // Opcional: suprime advertencias de casting
+@SuppressWarnings("unchecked")
 public class ButtonCell<T> extends TableCell<T, String> {
 
     private final Button btnAccion;
@@ -37,6 +25,7 @@ public class ButtonCell<T> extends TableCell<T, String> {
                 if (tipo.equals("Eliminar")) {
                     cliente.DELETE();
                     table.setItems(cliente.SELECT());
+                    table.refresh();
                 } else if (tipo.equals("Editar")) {
                     new Cliente(table, cliente);
                 }
@@ -46,6 +35,7 @@ public class ButtonCell<T> extends TableCell<T, String> {
                 if (tipo.equals("Eliminar")) {
                     empleado.DELETE();
                     table.setItems(empleado.SELECT());
+                    table.refresh();
                 } else if (tipo.equals("Editar")) {
                     new Empleado(table, empleado);
                 }
@@ -55,40 +45,50 @@ public class ButtonCell<T> extends TableCell<T, String> {
                 if (tipo.equals("Eliminar")) {
                     proveedor.DELETE();
                     table.setItems(proveedor.SELECT());
+                    table.refresh();
                 } else if (tipo.equals("Editar")) {
                     new Proveedores(table, proveedor);
                 }
 
-            }else if (obj instanceof MesasDAO mesa) {
+            } else if (obj instanceof MesasDAO mesa) {
+                TableView<MesasDAO> table = (TableView<MesasDAO>) getTableView();
                 if (tipo.equals("Eliminar")) {
                     mesa.DELETE();
-                    ((TableView<MesasDAO>) getTableView()).setItems(mesa.SELECT());
+                    table.setItems(mesa.SELECT());
+                    table.refresh();
                 } else if (tipo.equals("Editar")) {
-                    new Mesa((TableView<MesasDAO>) getTableView(), mesa);
+                    new Mesa(table, mesa);
                 }
 
-            }else if (obj instanceof BebidasDAO bebida) {
+            } else if (obj instanceof BebidasDAO bebida) {
+                TableView<BebidasDAO> table = (TableView<BebidasDAO>) getTableView();
                 if (tipo.equals("Eliminar")) {
                     bebida.DELETE();
-                    ((TableView<BebidasDAO>) getTableView()).setItems(bebida.SELECT());
+                    table.setItems(bebida.SELECT());
+                    table.refresh();
                 } else if (tipo.equals("Editar")) {
-                    new Bebidas((TableView<BebidasDAO>) getTableView(), bebida);
+                    new Bebidas(table, bebida);
                 }
 
-            }else if (obj instanceof CategoriaDAO categoria) {
+            } else if (obj instanceof ProductoDAO producto) {
+                // Corregido aquí el casteo, para que coincida con ProductoDAO
+                TableView<ProductoDAO> table = (TableView<ProductoDAO>) getTableView();
                 if (tipo.equals("Eliminar")) {
-                    categoria.DELETE();
-                    ((TableView<CategoriaDAO>) getTableView()).setItems(categoria.SELECT());
+                    producto.DELETE();
+                    table.setItems(producto.SELECT());
+                    table.refresh();
                 } else if (tipo.equals("Editar")) {
-                    new Categoria((TableView<CategoriaDAO>) getTableView(), categoria);
+                    new Producto(table, producto);
                 }
 
-            }else if (obj instanceof OrdenDAO orden) {
+            } else if (obj instanceof OrdenDAO orden) {
+                TableView<OrdenDAO> table = (TableView<OrdenDAO>) getTableView();
                 if (tipo.equals("Eliminar")) {
                     orden.DELETE();
-                    ((TableView<OrdenDAO>) getTableView()).setItems(orden.SELECT());
+                    table.setItems(orden.SELECT());
+                    table.refresh();
                 } else if (tipo.equals("Editar")) {
-                    new Orden((TableView<OrdenDAO>) getTableView(), orden);
+                    new Orden(table, orden);
                 }
             }
         });
