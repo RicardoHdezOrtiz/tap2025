@@ -7,7 +7,6 @@ import com.example.tap2025.modelos.OrdenDAO;
 import com.example.tap2025.modelos.ProductoDAO;
 import com.example.tap2025.utils.ReporteGraficas;
 
-
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.geometry.Insets;
@@ -24,13 +23,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CrearOrden {
 
     private VBox vBox;
     private MesasDAO mesaSeleccionada;
-    private ProductoDAO productoSeleccionado;
+    private List<ProductoDAO> productosSeleccionados = new ArrayList<>();
     private EmpleadoDAO meseroSeleccionado;
     private ClientesDAO clienteSeleccionado;
     private int pasoActual = 1;
@@ -51,19 +53,16 @@ public class CrearOrden {
         vBox.getChildren().add(lblInstruccion);
         mostrarPaso1();
 
-        // Botón para abrir reportes gráficos
         Button btnAbrirReportes = new Button("Mostrar Reportes Gráficos");
         btnAbrirReportes.setOnAction(e -> {
-            // Crear instancia de ReporteGraficas y mostrar ventana
             ReporteGraficas reporte = new ReporteGraficas();
-            Stage stage = new Stage();  // Crear una nueva ventana (Stage)
+            Stage stage = new Stage();
             reporte.mostrar(stage);
         });
 
         vBox.getChildren().add(btnAbrirReportes);
     }
 
-    // Paso 1: Seleccionar Mesa
     private void mostrarPaso1() {
         vBox.getChildren().clear();
         vBox.getChildren().add(lblInstruccion);
@@ -89,34 +88,84 @@ public class CrearOrden {
     private void mostrarPaso2() {
         vBox.getChildren().clear();
         vBox.getChildren().add(lblInstruccion);
-        lblInstruccion.setText("Paso 2: Seleccionar Producto");
-
-        HBox hBoxProductos = new HBox(10);
-        hBoxProductos.setAlignment(Pos.CENTER);
+        lblInstruccion.setText("Paso 2: Seleccionar Productos");
 
         ProductoDAO productoDAO = new ProductoDAO();
-        for (ProductoDAO producto : productoDAO.SELECT()) {
-            VBox vBoxProducto = new VBox(5);
-            vBoxProducto.setAlignment(Pos.CENTER);
+        List<ProductoDAO> productos = productoDAO.SELECT();
 
-            ImageView imageView = new ImageView();
-            try {
-                Image img = new Image(getClass().getResourceAsStream(producto.getImagen()), 80, 80, true, true);
-                imageView.setImage(img);
-            } catch (Exception e) {
-                System.out.println("No se encontró imagen: " + producto.getImagen());
+        // Filtrar productos por categoría (ajusta los ids según tu modelo)
+        List<ProductoDAO> alimentos = productos.stream()
+                .filter(p -> p.getIdCategoria() == 1)
+                .collect(Collectors.toList());
+        List<ProductoDAO> bebidas = productos.stream()
+                .filter(p -> p.getIdCategoria() == 2)
+                .collect(Collectors.toList());
+        List<ProductoDAO> postres = productos.stream()
+                .filter(p -> p.getIdCategoria() == 3)
+                .collect(Collectors.toList());
+
+        VBox contenedorCategorias = new VBox(15);
+        contenedorCategorias.setAlignment(Pos.CENTER);
+
+        java.util.function.BiFunction<String, List<ProductoDAO>, VBox> crearCategoriaBox = (titulo, listaProductos) -> {
+            VBox categoriaBox = new VBox(10);
+            Label lblTitulo = new Label(titulo);
+            lblTitulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+            categoriaBox.getChildren().add(lblTitulo);
+
+            HBox hBoxProductos = new HBox(10);
+            hBoxProductos.setAlignment(Pos.CENTER);
+
+            for (ProductoDAO producto : listaProductos) {
+                VBox vBoxProducto = new VBox(5);
+                vBoxProducto.setAlignment(Pos.CENTER);
+
+                ImageView imageView = new ImageView();
+                try {
+                    Image img = new Image(getClass().getResourceAsStream(producto.getImagen()), 80, 80, true, true);
+                    imageView.setImage(img);
+                } catch (Exception e) {
+                    System.out.println("No se encontró imagen: " + producto.getImagen());
+                }
+
+                Button btnProducto = new Button(producto.getNombreProducto());
+                btnProducto.setOnAction(e -> {
+                    productosSeleccionados.add(producto);
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Producto agregado");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Producto agregado: " + producto.getNombreProducto());
+                    alert.showAndWait();
+                });
+
+                vBoxProducto.getChildren().addAll(imageView, btnProducto);
+                hBoxProductos.getChildren().add(vBoxProducto);
             }
 
-            Button btnProducto = new Button(producto.getNombreProducto());
-            btnProducto.setOnAction(e -> {
-                productoSeleccionado = producto;
+            categoriaBox.getChildren().add(hBoxProductos);
+            return categoriaBox;
+        };
+
+        contenedorCategorias.getChildren().addAll(
+                crearCategoriaBox.apply("Alimentos_________________________________________________________________________________________", alimentos),
+                crearCategoriaBox.apply("Bebidas__________________________________________________________________________________________", bebidas),
+                crearCategoriaBox.apply("Postres____________________________________________________________________________________________", postres)
+        );
+
+        Button btnContinuar = new Button("Continuar");
+        btnContinuar.setOnAction(e -> {
+            if (productosSeleccionados.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Advertencia");
+                alert.setHeaderText(null);
+                alert.setContentText("Debe seleccionar al menos un producto.");
+                alert.showAndWait();
+            } else {
                 pasoActual = 3;
                 mostrarPaso3();
-            });
-
-            vBoxProducto.getChildren().addAll(imageView, btnProducto);
-            hBoxProductos.getChildren().add(vBoxProducto);
-        }
+            }
+        });
 
         Button btnAtras = new Button("Atrás");
         btnAtras.setOnAction(e -> {
@@ -124,7 +173,7 @@ public class CrearOrden {
             mostrarPaso1();
         });
 
-        vBox.getChildren().addAll(hBoxProductos, btnAtras);
+        vBox.getChildren().addAll(contenedorCategorias, btnContinuar, btnAtras);
     }
 
     private void mostrarPaso3() {
@@ -190,16 +239,23 @@ public class CrearOrden {
 
         VBox resumen = new VBox(10);
         resumen.setAlignment(Pos.CENTER_LEFT);
-        resumen.getChildren().addAll(
-                new Label("Mesa: " + mesaSeleccionada.getNoMesa()),
-                new Label("Producto: " + productoSeleccionado.getNombreProducto()),
-                new Label("Mesero: " + meseroSeleccionado.getNombres() + " " + meseroSeleccionado.getApellido1()),
-                new Label("Cliente: " + clienteSeleccionado.getNomCte() + " " + clienteSeleccionado.getApellidoPaterno()),
-                new Label("Total: $" + String.format("%.2f", productoSeleccionado.getPrecio()))
-        );
+
+        resumen.getChildren().add(new Label("Mesa: " + mesaSeleccionada.getNoMesa()));
+
+        resumen.getChildren().add(new Label("Productos seleccionados:"));
+        double total = 0.0;
+        for (ProductoDAO producto : productosSeleccionados) {
+            resumen.getChildren().add(new Label("- " + producto.getNombreProducto() + " ($" + String.format("%.2f", producto.getPrecio()) + ")"));
+            total += producto.getPrecio();
+        }
+
+        resumen.getChildren().add(new Label("Mesero: " + meseroSeleccionado.getNombres() + " " + meseroSeleccionado.getApellido1()));
+        resumen.getChildren().add(new Label("Cliente: " + clienteSeleccionado.getNomCte() + " " + clienteSeleccionado.getApellidoPaterno()));
+        resumen.getChildren().add(new Label("Total: $" + String.format("%.2f", total)));
 
         Button btnConfirmar = new Button("Confirmar y Guardar PDF");
-        btnConfirmar.setOnAction(e -> guardarOrdenYGenerarTXT());
+        double finalTotal = total;
+        btnConfirmar.setOnAction(e -> guardarOrdenYGenerarTXT(finalTotal));
 
         Button btnAtras = new Button("Atrás");
         btnAtras.setOnAction(e -> {
@@ -210,30 +266,35 @@ public class CrearOrden {
         vBox.getChildren().addAll(resumen, btnConfirmar, btnAtras);
     }
 
-    private void guardarOrdenYGenerarTXT() {
+    private void guardarOrdenYGenerarTXT(double total) {
         try {
             OrdenDAO orden = new OrdenDAO();
             orden.setIdCliente(clienteSeleccionado.getIdCte());
             orden.setFecha(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-            orden.setTotal((float) productoSeleccionado.getPrecio());
+            orden.setTotal((float) total);
             orden.setNoMesa(mesaSeleccionada.getNoMesa());
             orden.setIdEmpleado(meseroSeleccionado.getIdEmp());
             orden.INSERT();
 
             String homeDir = System.getProperty("user.home");
-            String filePath = Paths.get(homeDir, "Downloads", "Orden_" + orden.getIdOrden() + ".txt").toString();
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filePath)))) {
+            String filePath = Paths.get(homeDir, "Downloads", "Orden" + ".txt").toString();
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
                 writer.write("Detalles de la Orden");
                 writer.newLine();
                 writer.write("Mesa: " + mesaSeleccionada.getNoMesa());
                 writer.newLine();
-                writer.write("Producto: " + productoSeleccionado.getNombreProducto());
+                writer.write("Productos:");
                 writer.newLine();
+                for (ProductoDAO producto : productosSeleccionados) {
+                    writer.write("- " + producto.getNombreProducto() + " ($" + String.format("%.2f", producto.getPrecio()) + ")");
+                    writer.newLine();
+                }
                 writer.write("Mesero: " + meseroSeleccionado.getNombres() + " " + meseroSeleccionado.getApellido1());
                 writer.newLine();
                 writer.write("Cliente: " + clienteSeleccionado.getNomCte() + " " + clienteSeleccionado.getApellidoPaterno());
                 writer.newLine();
-                writer.write("Total: $" + String.format("%.2f", productoSeleccionado.getPrecio()));
+                writer.write("Total: $" + String.format("%.2f", total));
             }
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -241,6 +302,8 @@ public class CrearOrden {
             alert.setHeaderText(null);
             alert.setContentText("Orden guardada correctamente y archivo generado en Descargas.");
             alert.showAndWait();
+
+            productosSeleccionados.clear();
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -251,7 +314,6 @@ public class CrearOrden {
         }
     }
 
-    // Método para obtener el VBox para mostrarlo en el escenario principal
     public VBox getVista() {
         return vBox;
     }

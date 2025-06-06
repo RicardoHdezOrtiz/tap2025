@@ -35,8 +35,8 @@ public class RestauranteMenu extends Stage {
         // Acción para cerrar ventana
         btnSalir.setOnAction(e -> this.close());
 
-        // Si el usuario es admin, mostramos más opciones
         if (tipoUsuario != null && tipoUsuario.equalsIgnoreCase("admin")) {
+            // Botones para admin, sin botón Crear Orden
             Button btnOrdenes = crearBotonBarra("Órdenes", "/images/load7.png");
             Button btnMesas = crearBotonBarra("Mesas", "/images/load4.png");
             Button btnCategorias = crearBotonBarra("Categorías", "/images/load6.png");
@@ -46,7 +46,7 @@ public class RestauranteMenu extends Stage {
             Button btnReportes = crearBotonBarra("Reportes", "/images/load11.png");
             Button btnReservaciones = crearBotonBarra("Reservaciones", "/images/load13.png");
 
-            // Asignar eventos a botones admin
+            // Eventos para botones admin
             btnOrdenes.setOnAction(e -> cargarContenido(new ListaOrden().getVista()));
             btnMesas.setOnAction(e -> cargarContenido(new ListaMesas().getVista()));
             btnCategorias.setOnAction(e -> cargarContenido(new ListaProducto().getVista()));
@@ -59,11 +59,14 @@ public class RestauranteMenu extends Stage {
             barraSuperior.getChildren().addAll(
                     btnOrdenes, btnMesas, btnCategorias, btnClientes,
                     btnEmpleados, btnProveedores, btnReportes, btnReservaciones,
-                    btnCrearOrden, btnSalir
+                    btnSalir
             );
-        } else {
-            // Para otros tipos de usuarios solo mostramos crear orden y salir
+        } else if (tipoUsuario != null && tipoUsuario.equalsIgnoreCase("empleado")) {
+            // Mostrar solo botón Crear Orden y Salir para empleado
             barraSuperior.getChildren().addAll(btnCrearOrden, btnSalir);
+        } else {
+            // Para otros roles o valores nulos, solo botón Salir
+            barraSuperior.getChildren().add(btnSalir);
         }
 
         // Etiqueta de bienvenida
@@ -130,7 +133,6 @@ public class RestauranteMenu extends Stage {
         return btn;
     }
 
-    // Método para cambiar el contenido del panel central
     private void cargarContenido(Pane nuevoContenido) {
         panelContenido.getChildren().clear();
         panelContenido.getChildren().add(nuevoContenido);
